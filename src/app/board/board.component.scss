@@ -13,10 +13,21 @@
       justify-content: space-around;
 
       .column-cell-hole {
+        text-align: center;
         width: 90px;
         height: 90px;
         background-color: white;
         border-radius: 50%;
+      }
+
+      .tmp-yellow {
+        background-color: yellow;
+        opacity: 50%;
+      }
+
+      .tmp-blue {
+        background-color: blue;
+        opacity: 50%;
       }
 
       .yellow {
