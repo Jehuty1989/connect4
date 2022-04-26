@@ -17,6 +17,10 @@ export class BoardComponent implements OnInit {
   }
 
   makeBoard() {
+    this.arr.fill()
+    this.index = 0
+    this.player = true
+
     const board = document.getElementById("board")
 
     for (let i = 0; i < 6; i++) {
@@ -35,7 +39,7 @@ export class BoardComponent implements OnInit {
       const columnCellHole = document.createElement("div")
       columnCellHole.classList.add("column-cell-hole")
       columnCellHole.id = this.index.toString()
-      columnCellHole.textContent = this.index.toString()
+      // columnCellHole.textContent = this.index.toString()
       columnCellHole.addEventListener("click", this.makePlay.bind(this))
       columnCellHole.addEventListener("mouseover", this.hoverOn.bind(this))
       columnCellHole.addEventListener("mouseout", this.hoverOut.bind(this))
@@ -69,28 +73,45 @@ export class BoardComponent implements OnInit {
     }
 
     this.hoverOn(event)
-
-    // if (this.arr[event.target.id.toString()] === undefined) {
-    // }
   }
 
   winCheck(id: any) {
-    let cellsToCheck = []
+    let cellsToCheck: any[] = []
     let howManyInARow = 0
     const oneToCheck = !this.player ? "yellow" : "blue"
 
-    for (let i = -3; i < 4; i++) {
-      if (this.arr[id + i] === oneToCheck) { howManyInARow++ }
+    for (let i = id - 3; i < id + 4; i++) {
+      if (i < 0 || i > 41) { continue }
 
-      if (howManyInARow === 4) {
-        this.playerWins()
-        break
-      }
+      if (id % 7 === 0 && i >= id) {
+        cellsToCheck.push(i)
+        continue
+      } else if (i % 7 === 0 && cellsToCheck[0] !== undefined && i > id) { break }
+
+      cellsToCheck.push(i)
     }
 
+    cellsToCheck.forEach ((cell, index) => {
+      if (cell % 7 === 0) {
+        cellsToCheck = cellsToCheck.slice(index)
+      }
+    })
+
+    cellsToCheck.forEach ((cell) => {
+      if (this.arr[cell] === oneToCheck) {
+        howManyInARow++
+      } else {
+        howManyInARow = 0
+      }
+
+      if (howManyInARow === 4) { this.playerWins() }
+    })
+
+    cellsToCheck = []
     howManyInARow = 0
 
     for (let i = id - 18; i < id + 19; i = i + 6) {
+      if (id === 0) { break }
       if (i < 1) { continue }
       if (i > 41) { break }
       if (i % 7 === 0 && i >= id) {
@@ -100,52 +121,82 @@ export class BoardComponent implements OnInit {
       cellsToCheck.push(i)
     }
 
-    console.log(cellsToCheck)
-
-    for (let index in cellsToCheck) {
-      if (cellsToCheck[index] % 7 === 0 && parseInt(index) + 1 !== cellsToCheck.length) {
-        cellsToCheck = cellsToCheck.slice(parseInt(index) + 1)
-        // console.log(cellsToCheck)
+    cellsToCheck.forEach ((cell, index) => {
+      if (cell % 7 === 0 && index + 1 !== cellsToCheck.length) {
+        cellsToCheck = cellsToCheck.slice(index + 1)
       }
-    //   // if (cellsToCheck[index] > 41) {
-    //   //   console.log(cellsToCheck)
-    //   //   cellsToCheck = cellsToCheck.slice(0, (parseInt(index) * -1))
-    //   //   console.log(cellsToCheck)
-    //   // }
-    }
-    console.log(cellsToCheck)
+    })
 
-    for (let i = id - 18; i < id + 19; i = i + 6) {
-      if ((id - 5) % 7 === 0 && i < id - 5) { continue }
-      if (i > 38 || id > 38) { break }
-      if (((id + 1) % 7 === 0 && i < id) || i < 0) { continue }
-      // if (i < 1) { continue }
-      if (this.arr[i] === oneToCheck) { howManyInARow++ }
-      // console.log(howManyInARow)
-      // console.log(i)
-
-      if (howManyInARow === 4) {
-        this.playerWins()
-        break
+    cellsToCheck.forEach ((cell) => {
+      if (this.arr[cell] === oneToCheck) {
+        howManyInARow++
+      } else {
+        howManyInARow = 0
       }
-    }
+
+      if (howManyInARow === 4) { this.playerWins() }
+    })
 
     howManyInARow = 0
 
-    for (let i = id - 40; i < id + 41; i = i + 6) {
-      if (this.arr[i] === oneToCheck) { howManyInARow++ }
-      // console.log(i)
+    for (let i = id - 21; i < id + 22; i = i + 7) {
+      if (i < 0 || i > 41) { continue }
+      if (this.arr[i] === oneToCheck) {
+        howManyInARow++
+      } else {
+        howManyInARow = 0
+      }
 
-      if (howManyInARow === 4) {
-        this.playerWins()
+      if (howManyInARow === 4) { this.playerWins() }
+    }
+
+    cellsToCheck = []
+    howManyInARow = 0
+
+    for (let i = id - 24; i < id + 25; i = i + 8) {
+      if (id === 6) { break }
+      if (i < 1) { continue }
+      if (i > 41) { break }
+      if ((i + 1) % 7 === 0 && i >= id) {
+        cellsToCheck.push(i)
         break
       }
+      cellsToCheck.push(i)
     }
+
+    cellsToCheck.forEach ((cell, index) => {
+      if ((cell + 1) % 7 === 0 && index + 1 !== cellsToCheck.length) {
+        cellsToCheck = cellsToCheck.slice(index + 1)
+      }
+    })
+
+    cellsToCheck.forEach ((cell) => {
+      if (this.arr[cell] === oneToCheck) {
+        howManyInARow++
+      } else {
+        howManyInARow = 0
+      }
+
+      if (howManyInARow === 4) { this.playerWins() }
+    })
   }
 
   playerWins() {
     window.alert(`${!this.player ? "yellow" : "blue"} wins!`)
-    location.reload()
+    this.boardReset()
+  }
+
+  boardReset() {
+    this.arr.fill()
+    this.index = 0
+    this.player = true
+
+    const cells = document.getElementsByClassName("column-cell-hole")
+
+    for (let x = 0; x < cells.length; x++) {
+      cells[x].classList.remove("yellow")
+      cells[x].classList.remove("blue")
+    }
   }
 
   hoverOn(event: any) {
@@ -161,10 +212,6 @@ export class BoardComponent implements OnInit {
       const targetCell = document.getElementById(tmpArr[0].toString())
       targetCell!.classList.add(this.player ? "tmp-yellow" : "tmp-blue")
     }
-
-    // if (this.arr[event.target.id.toString()] === undefined) {
-    //   event.target.classList.add(this.player ? "tmp-yellow" : "tmp-blue")
-    // }
   }
 
   hoverOut(event: any) {
@@ -180,9 +227,5 @@ export class BoardComponent implements OnInit {
       const targetCell = document.getElementById(tmpArr[0].toString())
       targetCell!.classList.remove(this.player ? "tmp-yellow" : "tmp-blue")
     }
-
-    // if (this.arr[event.target.id.toString()] === undefined) {
-    //   event.target.classList.remove(this.player ? "tmp-yellow" : "tmp-blue")
-    // }
   }
 }
